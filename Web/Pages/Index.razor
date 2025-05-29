@@ -1,0 +1,130 @@
+﻿@page "/"
+@using Shared
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Text.Json
+@inject IHttpClientFactory HttpFactory
+
+<h3>Self-Adaptive ID Verification</h3>
+
+<label>Select test user context:</label>
+<select @bind="selectedSample" class="form-select w-50 mb-3">
+    @foreach (var file in sampleFiles)
+    {
+        <option value="@file">@file</option>
+    }
+</select>
+
+<button class="btn btn-primary mb-3" @onclick="LoadAndClassify" disabled="@isLoading">Load & Classify</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (isLoading)
+{
+    <p>Processing…</p>
+}
+else if (!string.IsNullOrEmpty(risk))
+{
+    <p>Your Risk Level: <strong>@risk</strong></p>
+    @if (requirements != null && requirements.Any())
+    {
+        <p>Recommended verification requirements:</p>
+        <div class="mb-3">
+            @foreach (var req in requirements)
+            {
+                <button class="btn btn-outline-secondary me-2 mb-2" @onclick="() => OnRequirementSelected(req)">@req</button>
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(selectedRequirement))
+        {
+            <p>You selected: <strong>@selectedRequirement</strong></p>
+        }
+    }
+}
+
+@code {
+    private readonly string[] sampleFiles = new[]
+    {
+    "low1.json","low2.json",
+    "medium1.json","medium2.json",
+    "high1.json","high2.json"
+  };
+
+    private string selectedSample = "low1.json";
+    private bool isLoading;
+    private string? errorMessage;
+    private string? risk;
+    private List<string>? requirements;
+    private string? selectedRequirement;
+
+    private string? lastRequestUrl;
+
+    private async Task LoadAndClassify()
+    {
+        isLoading = true;
+        errorMessage = null;
+        risk = null;
+        requirements = null;
+        selectedRequirement = null;
+        lastRequestUrl = null;
+
+        try
+        {
+            // Load sample JSON
+            var clientStatic = HttpFactory.CreateClient();
+            var jsonText = await clientStatic.GetStringAsync($"samples/{selectedSample}");
+            var currentContext = JsonSerializer.Deserialize<JsonElement>(jsonText);
+
+            // Call Functions API
+            var clientFunc = HttpFactory.CreateClient("FunctionsApi");
+            // Check BaseAddress:
+            if (clientFunc.BaseAddress is null)
+            {
+                throw new InvalidOperationException("HttpClient 'FunctionsApi' has no BaseAddress set.");
+            }
+
+            // Build and store the full request URL
+            var relative = "api/verify";
+            lastRequestUrl = new Uri(clientFunc.BaseAddress, relative).ToString();
+
+            //var response = await clientFunc.PostAsJsonAsync("api/verify", currentContext);
+            var response = await clientFunc.PostAsJsonAsync(relative, currentContext);
+
+            response.EnsureSuccessStatusCode();
+            var payload = await response.Content.ReadAsStringAsync();
+
+            // Extract Risk
+            var riskPart = payload.Split(';')[0].Split('=')[1].Trim();
+            risk = riskPart;
+
+            // Extract recommendations
+            var recPart = payload.Split(':', 2)[1].Trim().TrimEnd('.');
+            const string prefix = "Recommended verification requirements:";
+            if (recPart.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                recPart = recPart[prefix.Length..].Trim();
+            }
+
+            requirements = recPart
+              .Split(new[] { ", ", " and " }, StringSplitOptions.None)
+              .Where(r => !string.IsNullOrWhiteSpace(r))
+              .ToList();
+        }
+        catch (Exception ex)
+        {
+            //errorMessage = ex.Message;
+            errorMessage = $"Error calling '{lastRequestUrl}': {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnRequirementSelected(string req)
+    {
+        selectedRequirement = req;
+    }
+}

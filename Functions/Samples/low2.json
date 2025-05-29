@@ -1,0 +1,16 @@
+{
+  "userContext": {
+    "location": "Abuja, NG",
+    "deviceFingerprint": "Android-14-DF999AAA",
+    "recentTransactions": [
+      {
+        "amount": 5.99,
+        "currency": "NGN",
+        "type": "top-up"
+      }
+    ],
+    "accountAgeDays": 730,
+    "failedLoginsLastHour": 1,
+    "ipReputationScore": 90
+  }
+}

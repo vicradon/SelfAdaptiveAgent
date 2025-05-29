@@ -1,0 +1,21 @@
+{
+  "userContext": {
+    "location": "New York, USA",
+    "deviceFingerprint": "iOS-16-DF456DEF",
+    "recentTransactions": [
+      {
+        "amount": 250.00,
+        "currency": "USD",
+        "type": "transfer"
+      },
+      {
+        "amount": 30.00,
+        "currency": "USD",
+        "type": "purchase"
+      }
+    ],
+    "accountAgeDays": 45,
+    "failedLoginsLastHour": 2,
+    "ipReputationScore": 60
+  }
+}

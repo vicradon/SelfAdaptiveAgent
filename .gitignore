@@ -1,0 +1,17 @@
+# VS, build outputs, user-specific files
+.vs/
+bin/
+obj/
+*.user
+*.suo
+
+# Azure Functions local settings (contains secrets)
+src/Functions/local.settings.json
+
+# Rider/Resharper
+.idea/
+*.resharper
+
+# OS files
+Thumbs.db
+.DS_Store

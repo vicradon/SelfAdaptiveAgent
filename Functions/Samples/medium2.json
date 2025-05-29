@@ -1,0 +1,21 @@
+{
+  "userContext": {
+    "location": "Lagos, NG",
+    "deviceFingerprint": "Linux-Firefox-DF321GHI",
+    "recentTransactions": [
+      {
+        "amount": 1000.00,
+        "currency": "NGN",
+        "type": "withdrawal"
+      },
+      {
+        "amount": 50.00,
+        "currency": "NGN",
+        "type": "purchase"
+      }
+    ],
+    "accountAgeDays": 30,
+    "failedLoginsLastHour": 3,
+    "ipReputationScore": 55
+  }
+}

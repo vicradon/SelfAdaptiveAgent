@@ -1,0 +1,21 @@
+{
+  "userContext": {
+    "location": "Moscow, RU",
+    "deviceFingerprint": "Unknown-Device-DF000XYZ",
+    "recentTransactions": [
+      {
+        "amount": 5000.00,
+        "currency": "USD",
+        "type": "wire_transfer"
+      },
+      {
+        "amount": 200.00,
+        "currency": "USD",
+        "type": "purchase"
+      }
+    ],
+    "accountAgeDays": 2,
+    "failedLoginsLastHour": 10,
+    "ipReputationScore": 20
+  }
+}

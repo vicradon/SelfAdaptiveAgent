@@ -1,0 +1,13 @@
+# DocumentScan.skprompt
+# ----------------------
+# This prompt takes a userContext blob and returns exactly one word:
+#   Successful or Failed
+
+{{$userContext}}
+
+You are a document verification engine. 
+Based solely on the details above, classify the user’s verification status as one of:
+  • Successful
+  • Failed
+
+Respond with exactly one word (Successful or Failed), with no punctuation or extra text.
