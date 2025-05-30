@@ -65,7 +65,7 @@ namespace Functions
             var rawRisk = classificationResult.GetValue<string>().Trim();
             var risk = Enum.Parse<RiskLevel>(rawRisk, ignoreCase: true);
 
-            // 4) Build deterministic recommendations istead of using an ML model planner
+            // 4) Build deterministic recommendations istead of using an ML model planner which too random
             var recommendation = risk switch
             {
                 RiskLevel.Low => "document verification",
