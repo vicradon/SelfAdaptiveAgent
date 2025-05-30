@@ -101,7 +101,7 @@ else if (!string.IsNullOrEmpty(risk))
 
             // Extract recommendations
             var recPart = payload.Split(':', 2)[1].Trim().TrimEnd('.');
-            const string prefix = "Recommended verification requirements:";
+            const string prefix = "Recommended verification requirements (RVR):";
             if (recPart.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {
                 recPart = recPart[prefix.Length..].Trim();

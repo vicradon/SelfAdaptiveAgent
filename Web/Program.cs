@@ -23,7 +23,7 @@ if (!functionsApiBaseUrl.EndsWith('/'))
 {
     functionsApiBaseUrl += "/";
 }
-
+//
 builder.Services.AddHttpClient("FunctionsApi", client =>
 {
     client.BaseAddress = new Uri(functionsApiBaseUrl);
