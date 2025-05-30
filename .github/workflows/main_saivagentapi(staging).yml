@@ -40,9 +40,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID }}
-          subscription-id:${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
-          client-id:       ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_595A7BCF57C7446ABAA95687052520AB }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E65A540DCA2D41A2A2CEDF5C9C52DA3D }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2E778669D9CA4A579827736C0A7C303B }}
 
       # ──────────────────────────────────────────────────────────────────────────
       # 3) Deploy to your Function App’s staging slot
