@@ -49,6 +49,7 @@ jobs:
         with:
           app-name:  saivagentapi    # <— your Function App name, *not* saivagentapi/staging
           slot-name: staging         # <— the slot you created in Azure
+          resource-group: g8-hackathongroup
           package:   publish         # <— the folder we just published into
 
       # ──────────────────────────────────────────────────────────────────────────
