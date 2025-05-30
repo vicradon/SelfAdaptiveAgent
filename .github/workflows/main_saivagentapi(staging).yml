@@ -1,53 +1,66 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy dotnet core app to Azure Function App - saivagentapi
+name: Build and deploy Azure Function App (staging slot)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
+  DOTNET_VERSION: '8.0.x'
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write        # for OIDC‐based login
+      contents: read         # for checkout
 
     steps:
-      - name: 'Checkout GitHub Action'
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-        uses: actions/setup-dotnet@v1
+      - name: Setup .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Dotnet'
-        shell: pwsh
+      # ──────────────────────────────────────────────────────────────────────────
+      # 1) Publish *only* the Functions project into ./publish
+      - name: Publish Functions project
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output
-          popd
-      
-      - name: Login to Azure
+          dotnet publish src/Functions/Functions.csproj \
+            --configuration Release \
+            --output publish
+
+      # ──────────────────────────────────────────────────────────────────────────
+      # 2) Authenticate to Azure via OIDC
+      - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_595A7BCF57C7446ABAA95687052520AB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E65A540DCA2D41A2A2CEDF5C9C52DA3D }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2E778669D9CA4A579827736C0A7C303B }}
+          tenant-id:       ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id:${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
+          client-id:       ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
 
-      - name: 'Run Azure Functions Action'
-        uses: Azure/functions-action@v1
-        id: fa
+      # ──────────────────────────────────────────────────────────────────────────
+      # 3) Deploy to your Function App’s staging slot
+      - name: Deploy to Azure Functions (staging slot)
+        uses: azure/functions-action@v1
         with:
-          app-name: 'saivagentapi'
-          slot-name: 'staging'
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          app-name:  saivagentapi    # <— your Function App name, *not* saivagentapi/staging
+          slot-name: staging         # <— the slot you created in Azure
+          package:   publish         # <— the folder we just published into
+
+      # ──────────────────────────────────────────────────────────────────────────
+      # 4) (Optional) Post‐deployment slot‐swap
+      # - name: Swap staging to production
+      #   run: |
+      #     az functionapp deployment slot swap \
+      #       --name saivagentapi \
+      #       --resource-group g8-hackathongroup \
+      #       --slot staging \
+      #       --target-slot production
+
           
