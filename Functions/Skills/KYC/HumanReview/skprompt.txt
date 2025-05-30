@@ -1,9 +1,0 @@
-# HumanReview.skprompt
-# ----------------------
-
-You are a KYC escalation engine. 
-Flag the user context {{$userContext}} for manual review. 
-
-Return \"Human review required\".
-  
-
